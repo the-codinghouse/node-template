@@ -1,2 +1,0 @@
-# node-template
-node-template

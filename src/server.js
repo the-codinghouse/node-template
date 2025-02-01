@@ -1,30 +1,23 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const winston = require('../utils/logger');
 const authRoutes = require('../routes/routes');
+const sequelize = require('../config/db');
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
-// Database Connection
-// mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-//     .then(() => winston.info('Connected to the database'))
-//     .catch(err => winston.error('Database connection error: ', err));
+// Sync database
+sequelize.sync({alter:true})
+  .then(() => winston.info('Database synchronized'))
+  .catch(err => winston.error('Database sync error:', err));
 
-// Routes
 app.use('/api/auth', authRoutes);
 
-app.get('/get', (req, res) => {
-    res.send("test get");
-})
-
-app.get('/', (req, res) => {
-    res.send("test blank");
-})
-
 app.listen(process.env.PORT, () => {
-    winston.info(`Server is running on port ${process.env.PORT}`);
+  winston.info(`Server is running on port ${process.env.PORT}`);
 });
